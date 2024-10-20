@@ -19,6 +19,9 @@ pub fn build(b: *std.Build) void {
         .pic = pic,
         .strip = strip,
     });
+
+    addPaths(&nfd.root_module);
+
     b.installArtifact(nfd);
     nfd.addIncludePath(upstream.path("src/include"));
     nfd.installHeadersDirectory(upstream.path("src/include"), "", .{ .include_extensions = &.{ ".h", ".hpp" } });
@@ -45,7 +48,13 @@ pub fn build(b: *std.Build) void {
             nfd.root_module.addCMacro("NFD_PORTAL", "1");
         } else {
             nfd.addCSourceFile(.{ .file = upstream.path("src/nfd_gtk.cpp") });
-            nfd.linkSystemLibrary("gtk+-3.0");
+            // nfd.linkSystemLibrary("gtk+-3.0");
+            if (b.lazyDependency("gtk_3_headers", .{
+                .target = target,
+                .optimize = optimize,
+            })) |dep| {
+                nfd.linkLibrary(dep.artifact("gtk_3_headers"));
+            }
         }
     }
 
@@ -74,6 +83,10 @@ pub fn build(b: *std.Build) void {
         const test_step = b.step(name, b.fmt("Run {s}", .{sub_path}));
         test_step.dependOn(&run_test_exe.step);
     }
+}
+
+pub fn addPaths(mod: *std.Build.Module) void {
+    if (mod.resolved_target.?.result.os.tag == .macos) @import("xcode_frameworks").addPaths(mod);
 }
 
 const test_sources: []const []const u8 = &.{
