@@ -54,6 +54,7 @@ pub fn build(b: *std.Build) void {
                 .optimize = optimize,
             })) |dep| {
                 nfd.linkLibrary(dep.artifact("gtk_3_headers"));
+                nfd.installLibraryHeaders(dep.artifact("gtk_3_headers"));
             }
         }
     }

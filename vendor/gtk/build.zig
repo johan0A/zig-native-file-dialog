@@ -9,7 +9,6 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.addWriteFiles().add("empty.c", ""),
         .target = target,
         .optimize = optimize,
-        .link_libc = true,
     });
 
     const headers_root = "./headers/";
@@ -37,24 +36,18 @@ pub fn build(b: *std.Build) void {
         lib.installHeadersDirectory(b.path(headers_root ++ folder), folder, .{});
     }
     lib.installHeadersDirectory(b.path(headers_root), ".", .{});
+    lib.installHeadersDirectory(b.path(headers_root ++ "pthread"), ".", .{});
+    lib.installHeadersDirectory(b.path(headers_root ++ "features-time64"), "features-time64", .{});
 
-    // lib.installHeadersDirectory(b.path("asm"), "asm", .{});
-    // lib.installHeadersDirectory(b.path("atk"), "atk", .{});
-    // lib.installHeadersDirectory(b.path("atspi"), "atspi", .{});
-    // lib.installHeadersDirectory(b.path("bits"), "bits", .{});
-    // lib.installHeadersDirectory(b.path("c++"), "c++", .{});
-    // lib.installHeadersDirectory(b.path("dbus"), "dbus", .{});
-    // lib.installHeadersDirectory(b.path("freetype"), "freetype", .{});
-    // lib.installHeadersDirectory(b.path("gdk"), "gdk", .{});
-    // lib.installHeadersDirectory(b.path("gdk-pixbuf"), "gdk-pixbuf", .{});
-    // lib.installHeadersDirectory(b.path("gio"), "gio", .{});
-    // lib.installHeadersDirectory(b.path("glib"), "glib", .{});
-    // lib.installHeadersDirectory(b.path("gnu"), "gnu", .{});
-    // lib.installHeadersDirectory(b.path("gobject"), "gobject", .{});
-    // lib.installHeadersDirectory(b.path("gtk"), "gtk", .{});
-    // lib.installHeadersDirectory(b.path("pango"), "pango", .{});
-    // lib.installHeadersDirectory(b.path("sys"), "sys", .{});
-    // lib.installHeadersDirectory(b.path("unix-print"), "unix-print", .{});
+    if (b.lazyDependency("x11_headers", .{
+        .target = target,
+        .optimize = optimize,
+    })) |dep| {
+        lib.linkLibrary(dep.artifact("x11-headers"));
+        lib.installLibraryHeaders(dep.artifact("x11-headers"));
+    }
+
+    lib.linkLibC();
 
     b.installArtifact(lib);
 }

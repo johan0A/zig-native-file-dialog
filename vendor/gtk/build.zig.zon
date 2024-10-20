@@ -1,0 +1,15 @@
+.{
+    .name = "gtk_3_headers",
+    .version = "0.0.0",
+    .dependencies = .{
+        .x11_headers = .{
+            .path = "./vendor/x11-headers",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "LICENSE",
+        "README.md",
+    },
+}
