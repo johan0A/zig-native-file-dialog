@@ -20,8 +20,6 @@ pub fn build(b: *std.Build) void {
         .strip = strip,
     });
 
-    addPaths(&nfd.root_module);
-
     b.installArtifact(nfd);
     nfd.addIncludePath(upstream.path("src/include"));
     nfd.installHeadersDirectory(upstream.path("src/include"), "", .{ .include_extensions = &.{ ".h", ".hpp" } });
@@ -32,6 +30,7 @@ pub fn build(b: *std.Build) void {
         nfd.linkSystemLibrary("uuid");
         nfd.linkSystemLibrary("shell32");
     } else if (target.result.os.tag.isDarwin()) {
+        addPaths(&nfd.root_module);
         nfd.addCSourceFile(.{ .file = upstream.path("src/nfd_cocoa.m") });
         nfd.linkFramework("AppKit");
         // Whether this is correct is completely untested since I don't use macOS.

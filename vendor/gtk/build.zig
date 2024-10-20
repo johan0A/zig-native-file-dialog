@@ -11,43 +11,8 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const headers_root = "./headers/";
-    const header_folders = [_][]const u8{
-        "asm",
-        "atk",
-        "atspi",
-        "bits",
-        "c++",
-        "dbus",
-        "freetype",
-        "gdk",
-        "gdk-pixbuf",
-        "gio",
-        "glib",
-        "gnu",
-        "gobject",
-        "gtk",
-        "pango",
-        "sys",
-        "unix-print",
-    };
-
-    inline for (header_folders) |folder| {
-        lib.installHeadersDirectory(b.path(headers_root ++ folder), folder, .{});
-    }
-    lib.installHeadersDirectory(b.path(headers_root), ".", .{});
-    lib.installHeadersDirectory(b.path(headers_root ++ "pthread"), ".", .{});
-    lib.installHeadersDirectory(b.path(headers_root ++ "features-time64"), "features-time64", .{});
-
-    if (b.lazyDependency("x11_headers", .{
-        .target = target,
-        .optimize = optimize,
-    })) |dep| {
-        lib.linkLibrary(dep.artifact("x11-headers"));
-        lib.installLibraryHeaders(dep.artifact("x11-headers"));
-    }
-
+    lib.installHeadersDirectory(b.path("./headers/"), ".", .{});
+    lib.installHeadersDirectory(b.path("./X11/"), "X11", .{});
     lib.linkLibC();
-
     b.installArtifact(lib);
 }
