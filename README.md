@@ -1,4 +1,4 @@
-[![CI](https://github.com/allyourcodebase/nativefiledialog-extended/actions/workflows/ci.yaml/badge.svg)](https://github.com/allyourcodebase/nativefiledialog-extended/actions)
+# WIP
 
 # nativefiledialog-extended
 
